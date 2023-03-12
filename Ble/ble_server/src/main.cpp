@@ -28,6 +28,11 @@
 #define CHARAC2_UUID "c2a1d466-344c-4be3-ab3f-189f80dd7518"
 #define CHARAC3_UUID "c3a1d466-344c-4be3-ab3f-189f80dd7518"
 #define CHARAC4_UUID "c4a1d466-344c-4be3-ab3f-189f80dd7518"
+	
+#define PinButton 15
+#define PinLed 22
+
+int dist;
 
 BLECharacteristic charac_1(CHARAC1_UUID, BLECharacteristic::PROPERTY_NOTIFY | BLECharacteristic::PROPERTY_READ);
 BLECharacteristic charac_2(CHARAC2_UUID, BLECharacteristic::PROPERTY_NOTIFY | BLECharacteristic::PROPERTY_READ);
@@ -39,11 +44,13 @@ BLEDescriptor descrip_2(BLEUUID((uint16_t)0x2902));
 BLEDescriptor descrip_3(BLEUUID((uint16_t)0x2902));
 BLEDescriptor descrip_4(BLEUUID((uint16_t)0x2902));
 
+int getDist();
+
 //Variables
 int devicesConnected = 0;
 bool startAdvertize = true;
 BLEServer *pServer;
-	
+
 class MyServerCallbacks: public BLEServerCallbacks {
   void onConnect(BLEServer* pServer) {
     devicesConnected++;
@@ -90,6 +97,10 @@ void setup()
   // Start advertising services
   BLEAdvertising *pAdvertising = BLEDevice::getAdvertising();
   pAdvertising->addServiceUUID(SERVICE_UUID);
+
+  Serial.begin(115200);
+  pinMode(PinButton, INPUT);
+  pinMode(PinLed, OUTPUT);
   
 }
 
@@ -141,7 +152,21 @@ void loop()
       time4 = millis();
     }
   }
+
+  dist = getDist();
+
 }
 
+int getDist()
+{
+  if(digitalRead(PinButton))
+  {
+    digitalWrite(PinLed, HIGH);
+  }
+  else{
+    digitalWrite(PinLed, LOW);
+  }
+  return digitalRead(PinButton);
+}
 
 
